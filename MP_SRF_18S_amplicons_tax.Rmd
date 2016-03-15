@@ -1,0 +1,156 @@
+---
+title: "MP_SRF_18S_amplicons_tax"
+author: "lrubinat"
+date: "05/03/2016"
+output:
+  html_document:
+    theme: united
+    toc: yes
+  pdf_document:
+    highlight: zenburn
+    toc: yes
+---
+
+<!--- INITIALIZATION
+```{r, echo=FALSE}
+#error hook to kill knitr in case of errors
+library(knitr)
+knit_hooks$set(error = function(x, options) stop(x))
+opts_chunk$set(cache=TRUE, autodep=TRUE)
+```
+--->
+
+# 1) Data overview
+
+Samples with less than 5000 reads are removed: 
+
+``` {r load_data, echo=FALSE, message=FALSE}
+#setwd("/genwork/lrubinat")
+setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_16S_SRF_amplicons/MP_16S_amplicons_tax/")
+
+#read data 
+otu_tb16_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_16S_Surface/table_with_BLAST/MP_16S_SRF_tax_classif_v2.txt", head=TRUE, fill=TRUE)
+
+#table dimensions and format before setting column names
+dim(otu_tb16_tax) # 1178  125
+otu_tb16_tax[1:5,1:5]
+
+#row names = OTU name (option A)
+row.names(otu_tb16_tax)<-otu_tb16_tax[,1]
+
+#row names = row number (option B)
+#rownames(otu_tb18) <- 1:nrow(otu_tb18)
+
+otu_tb16_tax<-otu_tb16_tax[,-1]
+otu_tb16_tax[is.na(otu_tb16_tax)]<-0
+
+dim(otu_tb16_tax)
+otu_tb16_tax[1:5,1:5]
+
+#table with occurence data alone
+otu_tb16_tax_occur <- otu_tb16_tax[, 1:124]
+dim(otu_tb16_tax_occur) #  56116   124
+otu_tb16_tax_occur[1:5,1:5]
+
+amplicons_per_sample_tb16<-colSums(otu_tb16_tax_occur)
+amplicons_per_sample_tb16[which(colSums(otu_tb16_tax_occur)<5862)]
+
+#remove samples with less than 5862 reads
+otu_tax_occur_min5862 <- otu_tb16_tax_occur[,colSums(otu_tb16_tax_occur) > 5861]
+
+# samples st122, st124, st137 and st144 have less than 5862 reads.
+
+
+#remove samples with less than 5000 reads in the MP_18S_ss5000 dataset (so that we can compare the relative abundance of 16S and 18S OTUs considering the same samples)
+#otu_tb16_min5000_v2<-subset(otu_tb16_min5000, select=-c(MD985))
+```
+
+Table dimensions and content outline:
+
+```{r starting_dataset, echo=FALSE}
+dim(otu_tax_occur_min5862)
+otu_tax_occur_min5862[1:5,1:5]
+```
+
+Minimum number of reads per station:
+
+```{r reads_per_sample_overview1, echo=1}
+min(colSums(otu_tax_occur_min5862)) 
+#5862
+```
+
+Maximum number of reads per station:
+
+```{r reads_per_sample_overview2, echo=1}
+max(colSums(otu_tax_occur_min5862)) 
+# max: 156843
+```
+
+Identification of station with higher number of reads:
+
+```{r reads_per_sample_overview3, echo=TRUE}
+amplicons_per_sample<-colSums(otu_tax_occur_min5862)
+amplicons_per_sample[which(colSums(otu_tax_occur_min5862)>155000)]
+```
+
+Overall reads per sample:
+
+``` {r reads_per_sample_overview4, echo=FALSE}
+plot(sort(colSums(otu_tax_occur_min5862)), pch=19, xlab="sample", ylab="reads per sample", cex=0.9)
+```
+
+
+# 2) Normalization to 5862 reads per sample
+
+Let's normalize the original dataset by randomly subsampling 5862 reads in each station:
+
+``` {r species_richness_rarefaction1, echo=TRUE}
+library(vegan)
+otu_tax_occur_min5862_t<-t(otu_tax_occur_min5862)
+otu_tb16_occur_ss5862<-rrarefy(otu_tax_occur_min5862_t, 5862)
+```
+
+The normalized table shows the following dimensions and format:
+
+```{r species_richness_rarefaction2, echo=FALSE}
+dim(otu_tb16_occur_ss5862)
+otu_tb16_occur_ss5862[1:5,1:5]
+```
+
+Its content fits with the expected normalization values (5000 reads per station):
+
+``` {r species_richness_rarefaction3, echo=TRUE}
+rowSums(otu_tb16_occur_ss5862)
+```
+
+Let's check out how many OTUs don't appear in the new table:
+
+```{r species_richness_rarefaction4, echo=1:5}
+length(which(colSums(otu_tb16_occur_ss5862)==0)) 
+```
+
+There are 138 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
+
+```{r species_richness_rarefaction5, echo=1:3}
+otu_tb16_occur_ss5862_no_cero<-otu_tb16_occur_ss5862[,-(which(colSums(otu_tb16_occur_ss5862)==0))]
+dim(otu_tb16_occur_ss5862_no_cero)
+
+#the final dimensions of the normalized table are 120 1177.
+```
+
+Datasets summary:
+otu_tb16_tax --> 124 1315
+otu_tb16_occur_ss5862_no_cero --> 119 1177
+
+
+
+```{r merge_tables, echo=FALSE}
+otu_tb_with_tax<-merge(otu_tb16_tax, otu_tb16_occur_ss5862_no_cero, by="row.names")
+
+rownames.otu_tb_with_tax<-otu_tb_with_tax[,1]
+otu_tb_with_tax<-otu_tb_with_tax[,-1]
+colnames(otu_tb_with_tax, do.NULL=F)
+
+dim(otu_tb_with_tax)
+otu_tb_with_tax[1:5, 1:5]
+```
