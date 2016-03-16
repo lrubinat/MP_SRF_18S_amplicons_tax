@@ -47,6 +47,11 @@ tb18_tax[is.na(tb18_tax)]<-0
 dim(tb18_tax)
 tb18_tax[1:5,1:5]
 
+#table with taxonomi classification alone
+tb18_class <- tb18_tax[,125:131]
+dim(tb18_class)
+tb18_class[1:5,1:7]
+
 #table with occurence data alone
 tb18_tax_occur <- tb18_tax[, 1:124]
 dim(tb18_tax_occur) # 54979   124
@@ -149,15 +154,30 @@ Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occ
 ```{r merge_tables, echo=FALSE}
 
 tb18_tax_occur_ss8524_no_cero_t<-t(tb18_tax_occur_ss8524_no_cero)
-tb18_ss8524_tax<-merge(tb18_tax, tb18_tax_occur_ss8524_no_cero_t, by="row.names")
+tb18_ss8524_tax<-merge(tb18_tax_occur_ss8524_no_cero_t,tb18_class, by="row.names")
 
 dim(tb18_ss8524_tax)
 tb18_ss8524_tax[1:5,1:5]
 
+#fix OTU_no as new row
+rownames(tb18_ss8524_tax)=tb18_ss8524_tax$Row.names
+
+#add OTU_no as rowname
 rownames.tb18_ss8524_tax<-tb18_ss8524_tax[,1]
 tb18_ss8524_tax<-tb18_ss8524_tax[,-1]
-colnames(tb18_ss8524_tax, do.NULL=F)
+#colnames(tb18_ss8524_tax, do.NULL=F)
 
-dim(otu_tb_with_tax)
-otu_tb_with_tax[1:5, 1:5]
+dim(tb18_ss8524_tax)
+tb18_ss8524_tax[1:5, 1:5]
+
+#sort by OTU_no (split rowname, introduce no. into column "OTU_no" and sort)
+tb18_ss8524_tax["OTU_no"] <- NA
+tb18_ss8524_tax$OTU_no <- sapply(strsplit(rownames(tb18_ss8524_tax),split= "\\_"),'[',2)
+tb18_ss8524_tax$OTU_no <- as.numeric(as.character(tb18_ss8524_tax$OTU_no))
+tb18_ss8524_tax_sorted<-tb18_ss8524_tax[order(tb18_ss8524_tax$OTU_no, decreasing = FALSE), ]
+
+dim(tb18_ss8524_tax_sorted)
+tb18_ss8524_tax_sorted[1:5,1:5]
 ```
+
+
