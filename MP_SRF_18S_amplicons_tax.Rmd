@@ -152,7 +152,6 @@ dim(tb18_tax_occur_ss8524_no_cero) --> 123 30341
 Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8524_no_cero" with "tb18_tax".
 
 ```{r merge_tables, echo=FALSE}
-
 tb18_tax_occur_ss8524_no_cero_t<-t(tb18_tax_occur_ss8524_no_cero)
 tb18_ss8524_tax<-merge(tb18_tax_occur_ss8524_no_cero_t,tb18_class, by="row.names")
 
@@ -179,5 +178,24 @@ tb18_ss8524_tax_sorted<-tb18_ss8524_tax[order(tb18_ss8524_tax$OTU_no, decreasing
 dim(tb18_ss8524_tax_sorted)
 tb18_ss8524_tax_sorted[1:5,1:5]
 ```
+
+```{r select_phototrophs, echo=FALSE}
+tb18_phototrophs <- tb18_ss8524_tax_sorted[which(tb18_ss8524_tax_sorted$MAS_plus_BM_plus_SILVA_class != "NA"),]
+dim(tb18_phototrophs)
+tb18_phototrophs[1:5,1:5]
+```
+
+```{r aggregate, echo=FALSE}
+
+class_summary<-aggregate(tb18_phototrophs, list(tb18_phototrophs$MAS_plus_BM_plus_SILVA_class), length)
+# count the different groups
+
+#class_summary_reads<-aggregate(sum~class, data=otutab_full_wTax, FUN="sum") 
+# sum reads different groups
+```
+
+
+
+
 
 

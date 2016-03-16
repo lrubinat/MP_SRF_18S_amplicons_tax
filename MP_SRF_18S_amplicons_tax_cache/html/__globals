@@ -1,0 +1,14 @@
+load_data	<	>=	[<-	colSums	dim	is.na	read.table	row.names<-	setwd	which
+starting_dataset	dim	tb18_tax_occur_min8524
+reads_per_sample_overview1	colSums	min	tb18_tax_occur_min8524
+reads_per_sample_overview2	colSums	max	tb18_tax_occur_min8524
+reads_per_sample_overview3	>	colSums	tb18_tax_occur_min8524	which
+reads_per_sample_overview4	colSums	plot	sort	tb18_tax_occur_min8524
+species_richness_rarefaction1	library	rrarefy	t	tb18_tax_occur_min8524
+species_richness_rarefaction2	dim	tb18_tax_occur_ss8524
+species_richness_rarefaction3	rowSums	tb18_tax_occur_ss8524
+species_richness_rarefaction4	==	colSums	length	tb18_tax_occur_ss8524	which
+species_richness_rarefaction5	==	colSums	dim	tb18_tax_occur_ss8524	which
+merge_tables	[<-	$	$<-	as.character	as.numeric	dim	merge	order	rownames	rownames<-	sapply	strsplit	t	tb18_class	tb18_tax_occur_ss8524_no_cero
+select_phototrophs	!=	$	dim	tb18_ss8524_tax_sorted	which
+aggregate	$	aggregate	length	list	tb18_phototrophs
