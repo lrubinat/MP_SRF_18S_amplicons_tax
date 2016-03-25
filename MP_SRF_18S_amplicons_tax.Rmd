@@ -25,11 +25,10 @@ opts_chunk$set(cache=TRUE, autodep=TRUE)
 Data uploading:
 
 ``` {r load_data, echo=FALSE, message=FALSE}
-#setwd("/genwork/lrubinat")
 setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_18S_SRF_amplicons/MP_SRF_18S_amplicons_tax/")
 
 #read data 
-tb18_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_18S_Surface/table_with_BLAST/MP_18S_SRF_MAS_BM_SILVA_classif_tab.txt", head=TRUE, fill=TRUE)
+tb18_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_18S_Surface/table_with_BLAST/MP_18S_SRF_MAS_BM_SILVA_classif_tab_filtered.txt", head=TRUE, fill=TRUE)
 
 #table dimensions and format before setting column names
 dim(tb18_tax) # 54979   132
@@ -58,12 +57,12 @@ dim(tb18_tax_occur) # 54979   124
 tb18_tax_occur[1:5,1:5]
 
 amplicons_per_sample_tb18<-colSums(tb18_tax_occur)
-amplicons_per_sample_tb18[which(colSums(tb18_tax_occur)<8524)]
-# sample st054 has less than 8524 reads.
+amplicons_per_sample_tb18[which(colSums(tb18_tax_occur)<8522)]
+# sample st054 has less than 8522 reads.
 
-#remove samples with less than 8524 reads
-tb18_tax_occur_min8524 <- tb18_tax_occur[,colSums(tb18_tax_occur) >= 8524]
-dim(tb18_tax_occur_min8524)
+#remove samples with less than 8522 reads
+tb18_tax_occur_min8522 <- tb18_tax_occur[,colSums(tb18_tax_occur) >= 8522]
+dim(tb18_tax_occur_min8522)
 
 
 #remove samples with less than 5000 reads in the MP_18S_ss5000 dataset (so that we can compare the relative abundance of 16S and 18S OTUs considering the same samples)
@@ -73,114 +72,114 @@ dim(tb18_tax_occur_min8524)
 Table dimensions and content outline:
 
 ```{r starting_dataset, echo=FALSE}
-dim(tb18_tax_occur_min8524)
-tb18_tax_occur_min8524[1:5,1:5]
+dim(tb18_tax_occur_min8522)
+tb18_tax_occur_min8522[1:5,1:5]
 ```
 
 Minimum number of reads per station:
 
 ```{r reads_per_sample_overview1, echo=1}
-min(colSums(tb18_tax_occur_min8524)) 
-#8524
+min(colSums(tb18_tax_occur_min8522)) 
+#8522
 ```
 
 Maximum number of reads per station:
 
 ```{r reads_per_sample_overview2, echo=1}
-max(colSums(tb18_tax_occur_min8524)) 
-# max: 965595
+max(colSums(tb18_tax_occur_min8522)) 
+# max: 936570
 ```
 
 Identification of station with higher number of reads:
 
 ```{r reads_per_sample_overview3, echo=TRUE}
-amplicons_per_sample<-colSums(tb18_tax_occur_min8524)
-amplicons_per_sample[which(colSums(tb18_tax_occur_min8524)>900000)]
+amplicons_per_sample<-colSums(tb18_tax_occur_min8522)
+amplicons_per_sample[which(colSums(tb18_tax_occur_min8522)>900000)]
 ```
 
 Overall reads per sample:
 
 ``` {r reads_per_sample_overview4, echo=FALSE}
-plot(sort(colSums(tb18_tax_occur_min8524)), pch=19, xlab="sample", ylab="reads per sample", cex=0.9)
+plot(sort(colSums(tb18_tax_occur_min8522)), pch=19, xlab="sample", ylab="reads per sample", cex=0.9)
 ```
 
 
 ## 2) Normalization
 
-Let's normalize the original dataset by randomly subsampling 8524 reads in each station:
+Let's normalize the original dataset by randomly subsampling 8522 reads in each station:
 
 ``` {r species_richness_rarefaction1, echo=TRUE}
 library(vegan)
-tb18_tax_occur_min8524_t<-t(tb18_tax_occur_min8524)
-tb18_tax_occur_ss8524<-rrarefy(tb18_tax_occur_min8524_t, 8524)
+tb18_tax_occur_min8522_t<-t(tb18_tax_occur_min8522)
+tb18_tax_occur_ss8522<-rrarefy(tb18_tax_occur_min8522_t, 8522)
 ```
 
 The normalized table shows the following dimensions and format:
 
 ```{r species_richness_rarefaction2, echo=FALSE}
-dim(tb18_tax_occur_ss8524)
-tb18_tax_occur_ss8524[1:5,1:5]
+dim(tb18_tax_occur_ss8522)
+tb18_tax_occur_ss8522[1:5,1:5]
 ```
 
-Its content fits with the expected normalization values (8524 reads per station):
+Its content fits with the expected normalization values (8522 reads per station):
 
 ``` {r species_richness_rarefaction3, echo=TRUE}
-rowSums(tb18_tax_occur_ss8524)
+rowSums(tb18_tax_occur_ss8522)
 ```
 
 Let's check out how many OTUs don't appear in the new table:
 
 ```{r species_richness_rarefaction4, echo=1:5}
-length(which(colSums(tb18_tax_occur_ss8524)==0)) 
+length(which(colSums(tb18_tax_occur_ss8522)==0)) 
 ```
 
-There are 24638 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
+There are 20077 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
 
 ```{r species_richness_rarefaction5, echo=1:3}
-tb18_tax_occur_ss8524_no_cero<-tb18_tax_occur_ss8524[,-(which(colSums(tb18_tax_occur_ss8524)==0))]
-dim(tb18_tax_occur_ss8524_no_cero)
+tb18_tax_occur_ss8522_no_cero<-tb18_tax_occur_ss8522[,-(which(colSums(tb18_tax_occur_ss8522)==0))]
+dim(tb18_tax_occur_ss8522_no_cero)
 
-#the final dimensions of the normalized table are 123 30341.
-#24638 + 30341 = 54979
+#the final dimensions of the normalized table are 123 27067.
+#20077 + 27067 = 47144
 ```
 
 Datasets summary:
-dim(tb18_tax) --> 54979   131
-dim(tb18_tax_occur) --> 54979   124
-dim(tb18_tax_occur_ss8524_no_cero) --> 123 30341
+dim(tb18_tax) --> 47144   131
+dim(tb18_tax_occur) --> 47144   124
+dim(tb18_tax_occur_ss8522_no_cero) --> 123 27067
 
-Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8524_no_cero" with "tb18_tax".
+Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8522_no_cero" with "tb18_tax".
 
 ```{r merge_tables, echo=FALSE}
-tb18_tax_occur_ss8524_no_cero_t<-t(tb18_tax_occur_ss8524_no_cero)
-tb18_ss8524_tax<-merge(tb18_tax_occur_ss8524_no_cero_t,tb18_class, by="row.names")
+tb18_tax_occur_ss8522_no_cero_t<-t(tb18_tax_occur_ss8522_no_cero)
+tb18_ss8522_tax<-merge(tb18_tax_occur_ss8522_no_cero_t,tb18_class, by="row.names")
 
-dim(tb18_ss8524_tax)
-tb18_ss8524_tax[1:5,1:5]
+dim(tb18_ss8522_tax)
+tb18_ss8522_tax[1:5,1:5]
 
 #fix OTU_no as new row
-rownames(tb18_ss8524_tax)=tb18_ss8524_tax$Row.names
+rownames(tb18_ss8522_tax)=tb18_ss8522_tax$Row.names
 
 #add OTU_no as rowname
-rownames.tb18_ss8524_tax<-tb18_ss8524_tax[,1]
-tb18_ss8524_tax<-tb18_ss8524_tax[,-1]
-#colnames(tb18_ss8524_tax, do.NULL=F)
+rownames.tb18_ss8522_tax<-tb18_ss8522_tax[,1]
+tb18_ss8522_tax<-tb18_ss8522_tax[,-1]
+#colnames(tb18_ss8522_tax, do.NULL=F)
 
-dim(tb18_ss8524_tax)
-tb18_ss8524_tax[1:5, 1:5]
+dim(tb18_ss8522_tax)
+tb18_ss8522_tax[1:5, 1:5]
 
 #sort by OTU_no (split rowname, introduce no. into column "OTU_no" and sort)
-tb18_ss8524_tax["OTU_no"] <- NA
-tb18_ss8524_tax$OTU_no <- sapply(strsplit(rownames(tb18_ss8524_tax),split= "\\_"),'[',2)
-tb18_ss8524_tax$OTU_no <- as.numeric(as.character(tb18_ss8524_tax$OTU_no))
-tb18_ss8524_tax_sorted<-tb18_ss8524_tax[order(tb18_ss8524_tax$OTU_no, decreasing = FALSE), ]
+tb18_ss8522_tax["OTU_no"] <- NA
+tb18_ss8522_tax$OTU_no <- sapply(strsplit(rownames(tb18_ss8522_tax),split= "\\_"),'[',2)
+tb18_ss8522_tax$OTU_no <- as.numeric(as.character(tb18_ss8522_tax$OTU_no))
+tb18_ss8522_tax_sorted<-tb18_ss8522_tax[order(tb18_ss8522_tax$OTU_no, decreasing = FALSE), ]
 
-dim(tb18_ss8524_tax_sorted)
-tb18_ss8524_tax_sorted[1:5,1:5]
+dim(tb18_ss8522_tax_sorted)
+tb18_ss8522_tax_sorted[1:5,1:5]
 ```
 
 ```{r select_phototrophs, echo=FALSE}
-tb18_phototrophs <- tb18_ss8524_tax_sorted[which(tb18_ss8524_tax_sorted$MAS_plus_BM_plus_SILVA_class != "NA"),]
+tb18_phototrophs <- tb18_ss8522_tax_sorted[which(tb18_ss8522_tax_sorted$MAS_plus_BM_plus_SILVA_class != "NA"),]
 dim(tb18_phototrophs)
 tb18_phototrophs[1:5,123]
 ```
