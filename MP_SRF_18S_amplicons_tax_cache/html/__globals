@@ -1,14 +1,29 @@
 load_data	<	>=	[<-	colSums	dim	is.na	read.table	row.names<-	setwd	which
-starting_dataset	dim	tb18_tax_occur_min8524
-reads_per_sample_overview1	colSums	min	tb18_tax_occur_min8524
-reads_per_sample_overview2	colSums	max	tb18_tax_occur_min8524
-reads_per_sample_overview3	>	colSums	tb18_tax_occur_min8524	which
-reads_per_sample_overview4	colSums	plot	sort	tb18_tax_occur_min8524
-species_richness_rarefaction1	library	rrarefy	t	tb18_tax_occur_min8524
-species_richness_rarefaction2	dim	tb18_tax_occur_ss8524
-species_richness_rarefaction3	rowSums	tb18_tax_occur_ss8524
-species_richness_rarefaction4	==	colSums	length	tb18_tax_occur_ss8524	which
-species_richness_rarefaction5	==	colSums	dim	tb18_tax_occur_ss8524	which
-merge_tables	[<-	$	$<-	as.character	as.numeric	dim	merge	order	rownames	rownames<-	sapply	strsplit	t	tb18_class	tb18_tax_occur_ss8524_no_cero
-select_phototrophs	!=	$	dim	tb18_ss8524_tax_sorted	which
-aggregate	$	aggregate	length	list	tb18_phototrophs
+starting_dataset	dim	tb18_tax_occur_min8522
+reads_per_sample_overview1	colSums	min	tb18_tax_occur_min8522
+reads_per_sample_overview2	colSums	max	tb18_tax_occur_min8522
+reads_per_sample_overview3	>	colSums	tb18_tax_occur_min8522	which
+reads_per_sample_overview4	colSums	plot	sort	tb18_tax_occur_min8522
+species_richness_rarefaction1	library	rrarefy	t	tb18_tax_occur_min8522
+species_richness_rarefaction2	dim	tb18_tax_occur_ss8522
+species_richness_rarefaction3	rowSums	tb18_tax_occur_ss8522
+species_richness_rarefaction4	==	colSums	length	tb18_tax_occur_ss8522	which
+species_richness_rarefaction5	==	colSums	dim	tb18_tax_occur_ss8522	which
+merge_tables	[<-	$	$<-	as.character	as.numeric	dim	merge	order	rownames	rownames<-	sapply	strsplit	t	tb18_class	tb18_tax_occur_ss8522_no_cero
+select_phototrophs	!=	$	dim	tb18_ss8522_tax_sorted	which
+aggregate	$	aggregate	attach	detach	length	list	order	rowSums	sum	tb18_phototrophs	x
+unnamed-chunk-2	$	knit_hooks	library	opts_chunk	stop
+load_data_2	<	>=	[<-	c	colSums	dim	is.na	read.table	row.names<-	setwd	st054	subset	which
+starting_dataset_2	dim	tb16_tax_occur_min5844
+reads_per_sample_overview1_2	colSums	min	tb16_tax_occur_min5844
+reads_per_sample_overview2_2	colSums	max	tb16_tax_occur_min5844
+reads_per_sample_overview3_2	>	colSums	tb16_tax_occur_min5844	which
+reads_per_sample_overview4_2	colSums	plot	sort	tb16_tax_occur_min5844
+species_richness_rarefaction1_2	library	rrarefy	t	tb16_tax_occur_min5844
+species_richness_rarefaction2_2	dim	tb16_tax_occur_ss5844
+species_richness_rarefaction3_2	rowSums	tb16_tax_occur_ss5844
+species_richness_rarefaction4_2	==	colSums	length	tb16_tax_occur_ss5844	which
+species_richness_rarefaction5_2	==	colSums	dim	tb16_tax_occur_ss5844	which
+merge_tables_2	[<-	$	$<-	as.character	as.numeric	colSums	dim	merge	order	rownames	rownames<-	sapply	strsplit	t	tb16_class	tb16_tax_occur_ss5844_no_cero
+select_phototrophs_2	!=	$	&	dim	tb16_ss5844_tax_sorted	which
+aggregate_2	$	aggregate	attach	detach	length	list	order	rowSums	sum	tb16_protists	x

@@ -209,14 +209,23 @@ class_summary_otus_per_class_order
 
 # 2) 16S amplicons
 
-Data uploading:
+<!--- INITIALIZATION
+```{r, echo=FALSE}
+#error hook to kill knitr in case of errors
+library(knitr)
+knit_hooks$set(error = function(x, options) stop(x))
+opts_chunk$set(cache=TRUE, autodep=TRUE)
+```
+--->
 
-``` {r load_data, echo=FALSE, message=FALSE}
-#setwd("/genwork/lrubinat")
-#setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_16S_SRF_amplicons/MP_SRF_16S_amplicons_tax/")
+
+# 1) Data overview
+
+``` {r load_data_2, echo=FALSE, message=FALSE}
+setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_16S_SRF_amplicons/MP_16S_amplicons_tax/")
 
 #read data 
-tb16_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_16S_Surface/table_with_BLAST/MP_16S_SRF_tax_classif_tab.txt", head=TRUE, fill=TRUE)
+tb16_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_16S_Surface/table_with_BLAST/MP_16S_SRF_tax_classif_tab_filtered.txt", head=TRUE, fill=TRUE)
 
 #table dimensions and format before setting column names
 dim(tb16_tax) # 54979   132
@@ -235,149 +244,171 @@ dim(tb16_tax)
 tb16_tax[1:5,1:5]
 
 #table with taxonomi classification alone
-tb16_class <- tb16_tax[,125:130]
+tb16_class <- tb16_tax[,125:129]
 dim(tb16_class)
-tb16_class[1:5,1:6]
+tb16_class[1:5,1:5]
 
 #table with occurence data alone
 tb16_tax_occur <- tb16_tax[, 1:124]
-dim(tb16_tax_occur) # 54979   124
+dim(tb16_tax_occur) # 993 124
 tb16_tax_occur[1:5,1:5]
 
 amplicons_per_sample_tb16<-colSums(tb16_tax_occur)
-amplicons_per_sample_tb16[which(colSums(tb16_tax_occur)<5862)]
-# samples st122, st124, st137 and st144 have less than 5862 reads.
+amplicons_per_sample_tb16[which(colSums(tb16_tax_occur)<5844)]
+# samples st122, st124, st137 and st144 have less than 5844 reads.
 
-#remove samples with less than 5862 reads
-tb16_tax_occur_min5862 <- tb16_tax_occur[,colSums(tb16_tax_occur) >= 5862]
-dim(tb16_tax_occur_min5862)
+#remove samples with less than 5844 reads
+tb16_tax_occur_min5844 <- tb16_tax_occur[,colSums(tb16_tax_occur) >= 5844]
+dim(tb16_tax_occur_min5844)
 
 
-#remove samples with less than 5000 reads in the MP_16S_ss5000 dataset (so that we can compare the relative abundance of 16S and 16S OTUs considering the same samples)
-#otu_tb16_min5000_v2<-subset(otu_tb16_min5000, select=-c(MD985))
+#remove samples with omitted in MP_SRF_18S_amplicons_tax dataset (so that we can compare the relative abundance of 16S and 16S OTUs considering the same samples)
+tb16_tax_occur_min5844<-subset(tb16_tax_occur_min5844, select=-c(st054))
+dim(tb16_tax_occur_min5844)
 ```
 
 Table dimensions and content outline:
 
-```{r starting_dataset, echo=FALSE}
-dim(tb16_tax_occur_min5862)
-tb16_tax_occur_min5862[1:5,1:5]
+```{r starting_dataset_2, echo=FALSE}
+dim(tb16_tax_occur_min5844)
+tb16_tax_occur_min5844[1:5,1:5]
 ```
 
 Minimum number of reads per station:
 
-```{r reads_per_sample_overview1, echo=1}
-min(colSums(tb16_tax_occur_min5862)) 
-#5862
+```{r reads_per_sample_overview1_2, echo=1}
+min(colSums(tb16_tax_occur_min5844)) 
+#5844
 ```
 
 Maximum number of reads per station:
 
-```{r reads_per_sample_overview2, echo=1}
-max(colSums(tb16_tax_occur_min5862)) 
-# max: 156843
+```{r reads_per_sample_overview2_2, echo=1}
+max(colSums(tb16_tax_occur_min5844)) 
+# max: 156413
 ```
 
 Identification of station with higher number of reads:
 
-```{r reads_per_sample_overview3, echo=TRUE}
-amplicons_per_sample<-colSums(tb16_tax_occur_min5862)
-amplicons_per_sample[which(colSums(tb16_tax_occur_min5862)>155000)]
+```{r reads_per_sample_overview3_2, echo=TRUE}
+amplicons_per_sample<-colSums(tb16_tax_occur_min5844)
+amplicons_per_sample[which(colSums(tb16_tax_occur_min5844)>150000)]
 ```
 
 Overall reads per sample:
 
-``` {r reads_per_sample_overview4, echo=FALSE}
-plot(sort(colSums(tb16_tax_occur_min5862)), pch=19, xlab="sample", ylab="reads per sample", cex=0.9)
+``` {r reads_per_sample_overview4_2, echo=FALSE}
+plot(sort(colSums(tb16_tax_occur_min5844)), pch=19, xlab="sample", ylab="reads per sample", cex=0.9)
 ```
 
 
 ## 2) Normalization
 
-Let's normalize the original dataset by randomly subsampling 5862 reads in each station:
+Let's normalize the original dataset by randomly subsampling 5844 reads in each station:
 
-``` {r species_richness_rarefaction1, echo=TRUE}
+``` {r species_richness_rarefaction1_2, echo=TRUE}
 library(vegan)
-tb16_tax_occur_min5862_t<-t(tb16_tax_occur_min5862)
-tb16_tax_occur_ss5862<-rrarefy(tb16_tax_occur_min5862_t, 5862)
+tb16_tax_occur_min5844_t<-t(tb16_tax_occur_min5844)
+tb16_tax_occur_ss5844<-rrarefy(tb16_tax_occur_min5844_t, 5844)
 ```
 
 The normalized table shows the following dimensions and format:
 
-```{r species_richness_rarefaction2, echo=FALSE}
-dim(tb16_tax_occur_ss5862)
-tb16_tax_occur_ss5862[1:5,1:5]
+```{r species_richness_rarefaction2_2, echo=FALSE}
+dim(tb16_tax_occur_ss5844)
+tb16_tax_occur_ss5844[1:5,1:5]
 ```
 
-Its content fits with the expected normalization values (5862 reads per station):
+Its content fits with the expected normalization values (5844 reads per station):
 
-``` {r species_richness_rarefaction3, echo=TRUE}
-rowSums(tb16_tax_occur_ss5862)
+``` {r species_richness_rarefaction3_2, echo=TRUE}
+rowSums(tb16_tax_occur_ss5844)
 ```
 
 Let's check out how many OTUs don't appear in the new table:
 
-```{r species_richness_rarefaction4, echo=1:5}
-length(which(colSums(tb16_tax_occur_ss5862)==0)) 
+```{r species_richness_rarefaction4_2, echo=1:5}
+length(which(colSums(tb16_tax_occur_ss5844)==0)) 
 ```
 
-There are 161 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
+There are 54 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
 
-```{r species_richness_rarefaction5, echo=1:3}
-tb16_tax_occur_ss5862_no_cero<-tb16_tax_occur_ss5862[,-(which(colSums(tb16_tax_occur_ss5862)==0))]
-dim(tb16_tax_occur_ss5862_no_cero)
+```{r species_richness_rarefaction5_2, echo=1:3}
+tb16_tax_occur_ss5844_no_cero<-tb16_tax_occur_ss5844[,-(which(colSums(tb16_tax_occur_ss5844)==0))]
+dim(tb16_tax_occur_ss5844_no_cero)
 
-#the final dimensions of the normalized table are 123 30341.
-#24638 + 30341 = 54979
+#the final dimensions of the normalized table are 123 27067.
+#939 + 54 = 993
 ```
 
 Datasets summary:
-dim(tb16_tax) --> 1315  130
-dim(tb16_tax_occur) --> 1315  124
-dim(tb16_tax_occur_ss5862_no_cero) --> 120 1154
+dim(tb16_tax) --> 993 129
+dim(tb16_tax_occur) --> 993 124
+dim(tb16_tax_occur_ss5844_no_cero) --> 119 939
 
-Let's add the taxonomic classification to the left OTUs by merging "tb16_tax_occur_ss5862_no_cero" with "tb16_tax".
+Let's add the taxonomic classification to the left OTUs by merging "tb16_tax_occur_ss5844_no_cero" with "tb16_tax".
 
-```{r merge_tables, echo=FALSE}
-tb16_tax_occur_ss5862_no_cero_t<-t(tb16_tax_occur_ss5862_no_cero)
-tb16_ss5862_tax<-merge(tb16_tax_occur_ss5862_no_cero_t,tb16_class, by="row.names")
+```{r merge_tables_2, echo=FALSE}
+tb16_tax_occur_ss5844_no_cero_t<-t(tb16_tax_occur_ss5844_no_cero)
+tb16_ss5844_tax<-merge(tb16_tax_occur_ss5844_no_cero_t,tb16_class, by="row.names")
 
-dim(tb16_ss5862_tax)
-tb16_ss5862_tax[1:5,1:5]
+dim(tb16_ss5844_tax)
+tb16_ss5844_tax[1:5,1:5]
+colSums(tb16_ss5844_tax[,2:120])
 
 #fix OTU_no as new row
-rownames(tb16_ss5862_tax)=tb16_ss5862_tax$Row.names
+rownames(tb16_ss5844_tax)=tb16_ss5844_tax$Row.names
 
 #add OTU_no as rowname
-rownames.tb16_ss5862_tax<-tb16_ss5862_tax[,1]
-tb16_ss5862_tax<-tb16_ss5862_tax[,-1]
-#colnames(tb16_ss5862_tax, do.NULL=F)
+rownames.tb16_ss5844_tax<-tb16_ss5844_tax[,1]
+tb16_ss5844_tax<-tb16_ss5844_tax[,-1]
+#colnames(tb16_ss5844_tax, do.NULL=F)
 
-dim(tb16_ss5862_tax)
-tb16_ss5862_tax[1:5, 1:5]
+dim(tb16_ss5844_tax)
+tb16_ss5844_tax[1:5, 1:5]
 
 #sort by OTU_no (split rowname, introduce no. into column "OTU_no" and sort)
-tb16_ss5862_tax["OTU_no"] <- NA
-tb16_ss5862_tax$OTU_no <- sapply(strsplit(rownames(tb16_ss5862_tax),split= "\\_"),'[',2)
-tb16_ss5862_tax$OTU_no <- as.numeric(as.character(tb16_ss5862_tax$OTU_no))
-tb16_ss5862_tax_sorted<-tb16_ss5862_tax[order(tb16_ss5862_tax$OTU_no, decreasing = FALSE), ]
+tb16_ss5844_tax["OTU_no"] <- NA
+tb16_ss5844_tax$OTU_no <- sapply(strsplit(rownames(tb16_ss5844_tax),split= "\\_"),'[',2)
+tb16_ss5844_tax$OTU_no <- as.numeric(as.character(tb16_ss5844_tax$OTU_no))
+tb16_ss5844_tax_sorted<-tb16_ss5844_tax[order(tb16_ss5844_tax$OTU_no, decreasing = FALSE), ]
 
-dim(tb16_ss5862_tax_sorted)
-tb16_ss5862_tax_sorted[1:5,1:5]
+dim(tb16_ss5844_tax_sorted)
+tb16_ss5844_tax_sorted[1:5,124:125]
 ```
 
-```{r select_phototrophs, echo=FALSE}
-#tb16_phototrophs <- tb16_ss5862_tax_sorted[which(tb16_ss5862_tax_sorted$MAS_plus_BM_plus_SILVA_class != "NA"),]
-dim(tb16_phototrophs)
-tb16_phototrophs[1:5,1:5]
+```{r select_phototrophs_2, echo=FALSE}
+tb16_bacteria <- tb16_ss5844_tax_sorted[which(tb16_ss5844_tax_sorted$taxonomic_classes != "Bolidophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Chlorarachniophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Cryptophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Pelagophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Rappemonad" & tb16_ss5844_tax_sorted$taxonomic_classes != "Chrysophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Bacillariophyta" & tb16_ss5844_tax_sorted$taxonomic_classes != "Dictyochophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Mamiellophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Prasinophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "Prymnesiophyceae" & tb16_ss5844_tax_sorted$taxonomic_classes != "other_plastids"),]
+
+tb16_protists <- tb16_ss5844_tax_sorted[which(tb16_ss5844_tax_sorted$taxonomic_classes != "bacteria" & tb16_ss5844_tax_sorted$taxonomic_classes != "other_cyanob" & tb16_ss5844_tax_sorted$taxonomic_classes != "Prochlorococcus" & tb16_ss5844_tax_sorted$taxonomic_classes != "Synechococcus"),]
+
+dim(tb16_protists)
+dim(tb16_bacteria)
+tb16_protists[1:5,119:125]
+tb16_bacteria[1:5,124:125]
 ```
 
-```{r aggregate, echo=FALSE}
 
-class_summary<-aggregate(tb16_phototrophs, list(tb16_phototrophs$MAS_plus_BM_plus_SILVA_class), length)
+```{r aggregate_2, echo=TRUE}
+
+class_summary_reads_per_class_16S<-aggregate(rowSums(tb16_protists[1:119]), list(tb16_protists$taxonomic_classes), sum)
 # count the different groups
 
-class_summary
+class_summary_otus_per_class_16S<-aggregate(rowSums(tb16_protists[1:119]), list(tb16_protists$taxonomic_classes), length)
+
+attach(class_summary_reads_per_class_16S)
+class_summary_reads_per_class_16S_order<-class_summary_reads_per_class_16S[order(-x),]
+detach(class_summary_reads_per_class_16S)
+class_summary_reads_per_class_16S_order
+
+attach(class_summary_otus_per_class_16S)
+class_summary_otus_per_class_16S_order<-class_summary_otus_per_class_16S[order(-x),]
+detach(class_summary_otus_per_class_16S)
+class_summary_otus_per_class_16S_order
+
+
 #class_summary_reads<-aggregate(sum~class, data=otutab_full_wTax, FUN="sum") 
 # sum reads different groups
 ```
+
+
