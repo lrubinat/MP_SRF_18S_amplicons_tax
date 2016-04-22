@@ -299,7 +299,7 @@ boxplot(tb18_tax_occur_ss8522_no_cero.bray, main="Bray-Curtis dissimilarity matr
 
 The only relatively evident cluster we can distinguish in the dendogram stands out in the very left side of the plot. 
 
-(To be done: assign Longhurst provinces information to each station and check if any of the central clusters is meaningful regarding to the samples' geographical ubication)
+### COMA after SAMPLES' ### (To be done: assign Longhurst provinces information to each station and check if any of the central clusters is meaningful regarding to the samples geographical ubication)
 
 ```{r beta_div2, echo=FALSE}
 #UPGMA
@@ -329,31 +329,31 @@ plot(tb18_tax_occur_ss8522_no_cero.meta_nmds, main="metaMDS method")
 
 ```{r load_geo_data, echo=F, results="hide", message=F}
 #load geographical ubication of stations and sort according to otu_tb18 stations sequence.
-MP_geo_18S_ss5000<-read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/mp_surface_ubication.txt", sep="\t", header=T)
+MP_geo_18S<-read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/mp_surface_ubication.txt", sep="\t", header=T)
 
-row.names(MP_geo_18S_ss5000)<-MP_geo_18S_ss5000[,1]
+row.names(MP_geo_18S)<-MP_geo_18S[,1]
 
-MP_geo_18sorted_ss5000<-MP_geo_18S_ss5000[row.names(tb18_tax_occur_ss8522_no_cero),]
-dim(MP_geo_18sorted_ss5000)
-MP_geo_18sorted_ss5000[1:5,1:5]
+MP_geo_18S_sorted<-MP_geo_18S[row.names(tb18_tax_occur_ss8522_no_cero),]
+dim(MP_geo_18S_sorted)
+MP_geo_18S_sorted[1:5,1:5]
 tb18_tax_occur_ss8522_no_cero[1:5,1:5]
 
 #read lat-long in decimal degrees and translate into distance in km.
 library(fossil)
 
 #select only columns containing info about station, latitude and longitude.
-MP_geo_18sorted_ss5000_v2<-create.lats(MP_geo_18sorted_ss5000, loc="sample", long="long", lat="lat")
-head(MP_geo_18sorted_ss5000)
+MP_geo_18S_sorted_v2<-create.lats(MP_geo_18S_sorted, loc="sample", long="long", lat="lat")
+head(MP_geo_18S_sorted)
 
 #create a distance matrix (lower triangle) between a list of points.
-geo_distances_MP_18S_ss5000<-earth.dist(MP_geo_18sorted_ss5000_v2, dist = TRUE)
-head(geo_distances_MP_18S_ss5000)
-dim(geo_distances_MP_18S_ss5000)
+geo_distances_MP_18S<-earth.dist(MP_geo_18S_sorted_v2, dist = TRUE)
+head(geo_distances_MP_18S)
+dim(geo_distances_MP_18S)
 
-geo_distances_MP_18S_ss5000<-as.matrix(geo_distances_MP_18S_ss5000)
-dim(geo_distances_MP_18S_ss5000)
+geo_distances_MP_18S<-as.matrix(geo_distances_MP_18S)
+dim(geo_distances_MP_18S)
 
-#geo distances dataset ready to use "geo_distances_MP_euks"
+#geo distances dataset ready to use "geo_distances_MP_18S"
 ```
 
 Working datasets:
@@ -372,16 +372,16 @@ dim(tb18_tax_occur_ss8522_no_cero.bray)
 tb18_tax_occur_ss8522_no_cero.bray<-as.matrix(tb18_tax_occur_ss8522_no_cero.bray)
 ```
 
-3) Stations distances in km: geo_distances_MP_18S_ss5000
+3) Stations distances in km: geo_distances_MP_18S
 
 ```{r working_datasets3, echo=T}
-dim(geo_distances_MP_18S_ss5000)
+dim(geo_distances_MP_18S)
 ```
 
 Communities quickly change their composition across geographical distances:
 
 ```{r working_datasets4, echo=T}
-plot(geo_distances_MP_18S_ss5000, tb18_tax_occur_ss8522_no_cero.bray, pch=19, cex=0.4, xlab="Geopgraphical distances", ylab="Bray-Curtis dissimilarities")
+plot(geo_distances_MP_18S, tb18_tax_occur_ss8522_no_cero.bray, pch=19, cex=0.4, xlab="Geopgraphical distances", ylab="Bray-Curtis dissimilarities")
 ```
 
 ### 4.1) Mantel correlograms
@@ -389,28 +389,28 @@ plot(geo_distances_MP_18S_ss5000, tb18_tax_occur_ss8522_no_cero.bray, pch=19, ce
 Mantel statistic is -significantlly- so low, meaning that the correlation between samples dissimilarity and geographical distances is weak.
 
 ```{r mantel_correlogram1, echo=T}
-mantel(geo_distances_MP_18S_ss5000, tb18_tax_occur_ss8522_no_cero.bray)
+mantel(geo_distances_MP_18S, tb18_tax_occur_ss8522_no_cero.bray)
 ```
 
 Maximum distance between samples:
 
 ```{r mantel_correlogram2, echo=F}
-max(geo_distances_MP_18S_ss5000)
+max(geo_distances_MP_18S)
 ```
 
 Minimum distance between samples:
 
 ```{r mantel_correlogram3, echo=F}
-min(geo_distances_MP_18S_ss5000)
+min(geo_distances_MP_18S)
 ```
 
 Correlograms:
 
 ```{r mantel_correlogram4, echo=T}
-MP_18s_ss5000_mantel_correl_by_1000km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S_ss5000, break.pts=seq(0,20000, by=1000))
+MP_18s_ss5000_mantel_correl_by_1000km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=1000))
 plot(MP_18s_ss5000_mantel_correl_by_1000km)
 
-MP_18s_ss5000_mantel_correl_by_100km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S_ss5000, break.pts=seq(0,20000, by=100))
+MP_18s_ss5000_mantel_correl_by_100km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=100))
 plot(MP_18s_ss5000_mantel_correl_by_100km)
 ```
 
