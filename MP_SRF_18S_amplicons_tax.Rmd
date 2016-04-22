@@ -22,7 +22,9 @@ opts_chunk$set(cache=TRUE, autodep=TRUE)
 
 # 1) 18S amplicons
 
-Data uploading:
+## 1) Data overview
+
+Let's read the dataset and remove the samples containing less than 8522 reads:
 
 ``` {r load_data, echo=FALSE, message=FALSE}
 setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_18S_SRF_amplicons/MP_SRF_18S_amplicons_tax/")
@@ -31,7 +33,7 @@ setwd("/home/laura/Documents/TFM/genwork/data_analysis/MP_18S_SRF_amplicons/MP_S
 tb18_tax <- read.table(file="/home/laura/Documents/TFM/home/data/MALASPINA/Malaspina_18S_Surface/table_with_BLAST/MP_18S_SRF_MAS_BM_SILVA_classif_tab_filtered.txt", head=TRUE, fill=TRUE)
 
 #table dimensions and format before setting column names
-dim(tb18_tax) # 54979   132
+dim(tb18_tax) # 47144   132
 tb18_tax[1:5,1:5]
 
 #row names = OTU name (option A)
@@ -53,7 +55,7 @@ tb18_class[1:5,1:7]
 
 #table with occurence data alone
 tb18_tax_occur <- tb18_tax[, 1:124]
-dim(tb18_tax_occur) # 54979   124
+dim(tb18_tax_occur) # 47144   124
 tb18_tax_occur[1:5,1:5]
 
 amplicons_per_sample_tb18<-colSums(tb18_tax_occur)
@@ -64,9 +66,9 @@ amplicons_per_sample_tb18[which(colSums(tb18_tax_occur)<8522)]
 tb18_tax_occur_min8522 <- tb18_tax_occur[,colSums(tb18_tax_occur) >= 8522]
 dim(tb18_tax_occur_min8522)
 
-
-#remove samples with less than 5000 reads in the MP_18S_ss5000 dataset (so that we can compare the relative abundance of 16S and 18S OTUs considering the same samples)
-#otu_tb16_min5000_v2<-subset(otu_tb16_min5000, select=-c(MD985))
+#remove samples with omitted in MP_SRF_18S_amplicons_tax dataset (so that we can compare the relative abundance of 16S and 18S OTUs considering the same samples)
+tb18_tax_occur_min8522<-subset(tb18_tax_occur_min8522, select=-c(st122, st124, st137, st144))
+dim(tb18_tax_occur_min8522) #47144   119
 ```
 
 Table dimensions and content outline:
@@ -133,20 +135,20 @@ Let's check out how many OTUs don't appear in the new table:
 length(which(colSums(tb18_tax_occur_ss8522)==0)) 
 ```
 
-There are 20077 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
+There are 20237 OTUs that don't show any occurrence in the normalized data. Let's remove them from the table and take a look at its final dimensions:
 
 ```{r species_richness_rarefaction5, echo=1:3}
 tb18_tax_occur_ss8522_no_cero<-tb18_tax_occur_ss8522[,-(which(colSums(tb18_tax_occur_ss8522)==0))]
 dim(tb18_tax_occur_ss8522_no_cero)
 
-#the final dimensions of the normalized table are 123 27067.
-#20077 + 27067 = 47144
+#the final dimensions of the normalized table are 119 26907.
+#26907 + 20237 = 47144
 ```
 
 Datasets summary:
 dim(tb18_tax) --> 47144   131
 dim(tb18_tax_occur) --> 47144   124
-dim(tb18_tax_occur_ss8522_no_cero) --> 123 27067
+dim(tb18_tax_occur_ss8522_no_cero) --> 119 26907
 
 Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8522_no_cero" with "tb18_tax".
 
