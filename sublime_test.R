@@ -407,11 +407,11 @@ min(geo_distances_MP_18S)
 Correlograms:
 
 ```{r mantel_correlogram4, echo=T}
-MP_18s_ss5000_mantel_correl_by_1000km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=1000))
-plot(MP_18s_ss5000_mantel_correl_by_1000km)
+MP_18s_ss8522_mantel_correl_by_1000km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=1000))
+plot(MP_18s_ss8522_mantel_correl_by_1000km)
 
-MP_18s_ss5000_mantel_correl_by_100km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=100))
-plot(MP_18s_ss5000_mantel_correl_by_100km)
+MP_18s_ss8522_mantel_correl_by_100km<-mantel.correlog(tb18_tax_occur_ss8522_no_cero.bray, D.geo=geo_distances_MP_18S, break.pts=seq(0,20000, by=100))
+plot(MP_18s_ss8522_mantel_correl_by_100km)
 ```
 
 ## 5) Abundance vs. occurence
@@ -423,13 +423,13 @@ tb18_tax_occur_ss8522_no_cero_t<-t(tb18_tax_occur_ss8522_no_cero)
 colSums(tb18_tax_occur_ss8522_no_cero_t)
 
 #local abundance percentage
-tb18_tax_occur_ss8522_no_cero_t.rabund<-tb18_tax_occur_ss8522_no_cero_t/5000
+tb18_tax_occur_ss8522_no_cero_t.rabund<-tb18_tax_occur_ss8522_no_cero_t/8522
 
 colSums(tb18_tax_occur_ss8522_no_cero_t.rabund)
 tb18_tax_occur_ss8522_no_cero_t.rabund[1:5,1:5]
 
 #OTUs mean relative abundance
-tb18_tax_occur_ss8522_no_cero_t.rabund_means<-rowMeans(tb18_tax_occur_ss8522_no_cero_t.rabund) 
+tb18_txa_occur_ss8522_no_cero_t.rabund_means<-rowMeans(tb18_tax_occur_ss8522_no_cero_t.rabund) 
 tb18_tax_occur_ss8522_no_cero_t.rabund_means<-as.data.frame(tb18_tax_occur_ss8522_no_cero_t.rabund_means)
 
 head(tb18_tax_occur_ss8522_no_cero_t.rabund_means)
@@ -447,20 +447,20 @@ str(tb18_tax_occur_ss8522_no_cero_t.rabund_means.occurence_perc)
 ```
 
 ```{r merge_rabund_peroccur, echo=F, results='hide'}
-otu_tb18_ss5000_rabund_percoccur<-merge(tb18_tax_occur_ss8522_no_cero_t.rabund_means,tb18_tax_occur_ss8522_no_cero_t.rabund_means.occurence_perc, by="row.names")
+otu_tb18_ss8522_rabund_percoccur<-merge(tb18_tax_occur_ss8522_no_cero_t.rabund_means,tb18_tax_occur_ss8522_no_cero_t.rabund_means.occurence_perc, by="row.names")
 
-colnames(otu_tb18_ss5000_rabund_percoccur)<-c("OTUs","mean_rabund","perc_occur")
-otu_tb18_ss5000_rabund_percoccur[1:5,]
+colnames(otu_tb18_ss8522_rabund_percoccur)<-c("OTUs","mean_rabund","perc_occur")
+otu_tb18_ss8522_rabund_percoccur[1:5,]
 
-row.names(otu_tb18_ss5000_rabund_percoccur)<-otu_tb18_ss5000_rabund_percoccur[,1]
-otu_tb18_ss5000_rabund_percoccur<-otu_tb18_ss5000_rabund_percoccur[,-1]
-otu_tb18_ss5000_rabund_percoccur[1:5,]
+row.names(otu_tb18_ss8522_rabund_percoccur)<-otu_tb18_ss8522_rabund_percoccur[,1]
+otu_tb18_ss8522_rabund_percoccur<-otu_tb18_ss8522_rabund_percoccur[,-1]
+otu_tb18_ss8522_rabund_percoccur[1:5,]
 ```
 
 In the following plot, we can appreciate the OTUs distribution according to their percentage of occurence and relative abundance. The red line keeps up OTUs that occur in more than 80% of the samples, the green line limits regionally rare OTUs (< 0.001%), and the blue one restricts regionally abundant OTUs (> 0.1%).
 
 ```{r abund_vs_occurence_table, echo=F}
-plot(otu_tb18_ss5000_rabund_percoccur$mean_rabund,otu_tb18_ss5000_rabund_percoccur$perc_occur, log="x", pch=19, cex=0.8, xlab="Mean relative abundance", ylab="Percentage of occurence")
+plot(otu_tb18_ss8522_rabund_percoccur$mean_rabund,otu_tb18_ss8522_rabund_percoccur$perc_occur, log="x", pch=19, cex=0.8, xlab="Mean relative abundance", ylab="Percentage of occurence")
 abline(h=80, col="red") #occurence higher than 80%
 abline(v=0.00001, col="green") #rare OTUs
 abline(v=0.001, col="blue") #cosmopolitan OTUs
@@ -474,12 +474,12 @@ Regionally abundant OTUs (relative abundance over 0.1%):
 
 ```{r abundant_OTUs, echo=7}
 #regionally abundant
-tb18_ss5000_abundant<-otu_tb18_ss5000_rabund_percoccur[otu_tb18_ss5000_rabund_percoccur$mean_rabund > 0.001,]
+tb18_ss8522_abundant<-otu_tb18_ss8522_rabund_percoccur[otu_tb18_ss8522_rabund_percoccur$mean_rabund > 0.001,]
 
-tb18_ss5000_abundant_sorted<-tb18_ss5000_abundant[order(tb18_ss5000_abundant$mean_rabund, tb18_ss5000_abundant$perc_occur, decreasing = T), c(1,2)]
+tb18_ss8522_abundant_sorted<-tb18_ss8522_abundant[order(tb18_ss8522_abundant$mean_rabund, tb18_ss8522_abundant$perc_occur, decreasing = T), c(1,2)]
 
-tb18_ss5000_abundant_sorted
-dim(tb18_ss5000_abundant_sorted)
+tb18_ss8522_abundant_sorted
+dim(tb18_ss8522_abundant_sorted)
 ```
 
 Proportion of regionally abundant OTUs (%):
@@ -488,19 +488,19 @@ Proportion of regionally abundant OTUs (%):
 #there are 83 regionally abundant OTUs.
 (162/25191)*100 # = 7.29% of the OTUs are regionally abundant
 
-#length(row.names(otu_tb18_ss5000_rabund_percoccur[otu_tb18_ss5000_rabund_percoccur$mean_rabund > 0.001,])) # 83 OTUs
-#row.names(otu_tb18_ss5000_rabund_percoccur[otu_tb18_ss5000_rabund_percoccur$mean_rabund > 0.001,])
+#length(row.names(otu_tb18_ss8522_rabund_percoccur[otu_tb18_ss8522_rabund_percoccur$mean_rabund > 0.001,])) # 83 OTUs
+#row.names(otu_tb18_ss8522_rabund_percoccur[otu_tb18_ss8522_rabund_percoccur$mean_rabund > 0.001,])
 ```
 
 Cosmopolitan OTUs (relative abundance over 0.1% and occurence in more than 80% of samples):
 
 ```{r select_cosmopolitan, echo=6}
-otu_tb18_ss5000_rabund_cosm<-otu_tb18_ss5000_rabund_percoccur[otu_tb18_ss5000_rabund_percoccur$mean_rabund > 0.001,]
-otu_tb18_ss5000_rabund_poccur_cosm<-otu_tb18_ss5000_rabund_cosm[otu_tb18_ss5000_rabund_cosm$perc_occur > 80,]
-otu_tb18_ss5000_cosmop_sorted<-otu_tb18_ss5000_rabund_poccur_cosm[order(otu_tb18_ss5000_rabund_poccur_cosm$perc_occur, otu_tb18_ss5000_rabund_poccur_cosm$mean_rabund, decreasing = T), c(1,2)]
+otu_tb18_ss8522_rabund_cosm<-otu_tb18_ss8522_rabund_percoccur[otu_tb18_ss8522_rabund_percoccur$mean_rabund > 0.001,]
+otu_tb18_ss8522_rabund_poccur_cosm<-otu_tb18_ss8522_rabund_cosm[otu_tb18_ss8522_rabund_cosm$perc_occur > 80,]
+otu_tb18_ss8522_cosmop_sorted<-otu_tb18_ss8522_rabund_poccur_cosm[order(otu_tb18_ss8522_rabund_poccur_cosm$perc_occur, otu_tb18_ss8522_rabund_poccur_cosm$mean_rabund, decreasing = T), c(1,2)]
 
-otu_tb18_ss5000_cosmop_sorted
-dim(otu_tb18_ss5000_cosmop_sorted)
+otu_tb18_ss8522_cosmop_sorted
+dim(otu_tb18_ss8522_cosmop_sorted)
 ```
 
 Proportion of cosmopolitan OTUs (%):
@@ -512,35 +512,26 @@ Proportion of cosmopolitan OTUs (%):
 Number and proportion (%) of rare OTUs:
 
 ```{r rare_OTUs, echo=1}
-dim(otu_tb18_ss5000_rabund_percoccur[otu_tb18_ss5000_rabund_percoccur$mean_rabund < 0.00001 & otu_tb18_ss5000_rabund_percoccur$mean_rabund >0,])
+dim(otu_tb18_ss8522_rabund_percoccur[otu_tb18_ss8522_rabund_percoccur$mean_rabund < 0.00001 & otu_tb18_ss8522_rabund_percoccur$mean_rabund >0,])
  
 (18551/25191)*100 # = 28.56% of the OTUs are regionally rare
 ```
 
 <!---
 ```{r otu_col_chech, echo = T}
-dim(otu_tb18_ss5000_rabund_percoccur)
+dim(otu_tb18_ss8522_rabund_percoccur)
 dim(otu_tb18_min5000_v2)
 otu_tb18_min5000_v2[1:5,1:5]
 
 #rare OTUs:
-# length(row.names(otu_tb16_ss5000_rabund_percoccur[otu_tb16_ss5000_rabund_percoccur$mean_rabund < 0.00001 & otu_tb16_ss5000_rabund_percoccur$mean_rabund >0 ,])) # 325 OTUs
+# length(row.names(otu_tb16_ss8522_rabund_percoccur[otu_tb16_ss8522_rabund_percoccur$mean_rabund < 0.00001 & otu_tb16_ss8522_rabund_percoccur$mean_rabund >0 ,])) # 325 OTUs
 ```
 --->
 
 
+## 6) Taxonomic composition analysis
 
-
-
-
-
-
-
-
-
-
-
-Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8522_no_cero" with "tb18_tax":
+### COMA Let's ### Let's add the taxonomic classification to the left OTUs by merging "tb18_tax_occur_ss8522_no_cero" with "tb18_tax":
 
 ```{r merge_tables, echo=FALSE}
 tb18_tax_occur_ss8522_no_cero_t<-t(tb18_tax_occur_ss8522_no_cero)
